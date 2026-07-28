@@ -57,15 +57,15 @@ public class DesignController {
     }
 
     /** Admin-only: remove a design. */
-    @DeleteMapping("/{fileName}")
+    @DeleteMapping
     public ResponseEntity<ApiResponse> deleteDesign(
             @RequestHeader("X-Admin-Key") String adminKey,
-            @PathVariable String fileName) {
+            @RequestParam("url") String url) {
 
         if (!adminAuth.isValid(adminKey)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, "Invalid admin key"));
         }
-        boolean deleted = fileStorageService.deleteImage(fileName);
+        boolean deleted = fileStorageService.deleteImage(url);
         if (deleted) {
             return ResponseEntity.ok(new ApiResponse(true, "Deleted"));
         }

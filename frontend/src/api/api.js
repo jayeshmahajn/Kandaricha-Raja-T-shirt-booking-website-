@@ -48,8 +48,8 @@ export const api = {
     }).then(handle);
   },
 
-  deleteDesign: (key, fileName) =>
-    fetch(`${BASE_URL}/api/designs/${encodeURIComponent(fileName)}`, {
+  deleteDesign: (key, url) =>
+    fetch(`${BASE_URL}/api/designs?url=${encodeURIComponent(url)}`, {
       method: 'DELETE',
       headers: { 'X-Admin-Key': key },
     }).then(handle),
