@@ -158,13 +158,21 @@ function AdminDashboard({ adminKey, onLogout }) {
             <table className="bookings-table">
               <thead>
                 <tr>
-                  {Object.keys(bookings[0]).map((h) => <th key={h}>{h}</th>)}
+                  {Object.keys(bookings[0]).filter(h => h !== 'id').map((h) => <th key={h}>{h}</th>)}
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
                 {bookings.map((b, i) => (
-                  <tr key={i}>
-                    {Object.values(b).map((v, j) => <td key={j}>{v}</td>)}
+                  <tr key={b.id || i}>
+                    {Object.entries(b).filter(([k]) => k !== 'id').map(([k, v], j) => <td key={j}>{v}</td>)}
+                    <td>
+                      <button onClick={async () => {
+                        if (!confirm('हे बुकिंग डिलीट करायचे?')) return;
+                        await api.deleteBooking(adminKey, b.id);
+                        refresh();
+                      }}>Delete</button>
+                    </td>
                   </tr>
                 ))}
               </tbody>

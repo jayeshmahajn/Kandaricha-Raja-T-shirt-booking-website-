@@ -42,6 +42,7 @@ public class BookingService {
         long srNo = 1;
         for (Booking b : bookings) {
             Map<String, String> entry = new LinkedHashMap<>();
+            entry.put("id", String.valueOf(b.getId()));
             entry.put("Sr No", String.valueOf(srNo++));
             entry.put("Full Name", b.getFullName());
             entry.put("T-Shirt Size", b.getSize());
@@ -51,6 +52,10 @@ public class BookingService {
             result.add(entry);
         }
         return result;
+    }
+
+    public void deleteBooking(Long id) {
+        bookingRepository.deleteById(id);
     }
 
     public byte[] generateExcelBytes() throws IOException {

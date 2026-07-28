@@ -43,6 +43,15 @@ public class BookingController {
         return ResponseEntity.ok(new ApiResponse(true, "OK", bookings));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse> deleteBooking(@RequestHeader("X-Admin-Key") String adminKey, @PathVariable Long id) {
+        if (!adminAuth.isValid(adminKey)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, "Invalid admin key"));
+        }
+        bookingService.deleteBooking(id);
+        return ResponseEntity.ok(new ApiResponse(true, "Booking deleted"));
+    }
+
     @GetMapping("/download")
     public ResponseEntity<byte[]> downloadExcel(@RequestHeader("X-Admin-Key") String adminKey) {
         if (!adminAuth.isValid(adminKey)) {

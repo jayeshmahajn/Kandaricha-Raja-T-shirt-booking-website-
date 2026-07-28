@@ -36,6 +36,12 @@ export const api = {
       headers: { 'X-Admin-Key': key },
     }).then(handle),
 
+  deleteBooking: (key, id) =>
+    fetch(`${BASE_URL}/api/bookings/${id}`, {
+      method: 'DELETE',
+      headers: { 'X-Admin-Key': key },
+    }).then(handle),
+
   downloadExcelUrl: () => `${BASE_URL}/api/bookings/download`,
 
   uploadDesign: (key, file) => {
