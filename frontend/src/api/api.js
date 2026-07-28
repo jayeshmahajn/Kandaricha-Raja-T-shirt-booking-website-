@@ -19,7 +19,10 @@ export const api = {
   listDesigns: () =>
     fetch(`${BASE_URL}/api/designs`).then(handle),
 
-  imageUrl: (fileName) => `${BASE_URL}/uploads/${fileName}`,
+  imageUrl: (fileName) => {
+    if (fileName.startsWith('http')) return fileName;
+    return `${BASE_URL}/uploads/${fileName}`;
+  },
 
   adminLogin: (key) =>
     fetch(`${BASE_URL}/api/admin/login`, {
@@ -46,7 +49,7 @@ export const api = {
   },
 
   deleteDesign: (key, fileName) =>
-    fetch(`${BASE_URL}/api/designs/${fileName}`, {
+    fetch(`${BASE_URL}/api/designs/${encodeURIComponent(fileName)}`, {
       method: 'DELETE',
       headers: { 'X-Admin-Key': key },
     }).then(handle),
