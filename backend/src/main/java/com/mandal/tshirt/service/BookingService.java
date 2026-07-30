@@ -58,6 +58,16 @@ public class BookingService {
         bookingRepository.deleteById(id);
     }
 
+    public void updateBooking(Long id, BookingRequest request) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+        booking.setFullName(request.getFullName().trim());
+        booking.setSize(request.getSize().trim());
+        booking.setSleeveType(request.getSleeveType().trim());
+        booking.setPhoneNumber(request.getPhoneNumber().trim());
+        bookingRepository.save(booking);
+    }
+
     public byte[] generateExcelBytes() throws IOException {
         List<Booking> bookings = bookingRepository.findAll();
         

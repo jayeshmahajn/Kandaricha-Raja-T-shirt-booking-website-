@@ -42,6 +42,16 @@ export const api = {
       headers: { 'X-Admin-Key': key },
     }).then(handle),
 
+  updateBooking: (key, id, data) =>
+    fetch(`${BASE_URL}/api/bookings/${id}`, {
+      method: 'PUT',
+      headers: { 
+        'X-Admin-Key': key,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data),
+    }).then(handle),
+
   downloadExcelUrl: () => `${BASE_URL}/api/bookings/download`,
 
   uploadDesign: (key, file) => {

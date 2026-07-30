@@ -9,7 +9,7 @@ public class BookingRequest {
     private String fullName;
 
     @NotBlank(message = "T-shirt size is required")
-    @Pattern(regexp = "^(28|30|32|34|36|38|40|42|44|46|48|50)$",
+    @Pattern(regexp = "^(20|22|24|26|28|30|32|34|36|38|40|42|44|46|48|50)$",
              message = "Size must be a valid chest size in inches (e.g. 38, 40, 42)")
     private String size;
 

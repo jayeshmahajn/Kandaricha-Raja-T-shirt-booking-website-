@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api } from '../api/api.js'
+import { SIZE_CHART } from '../config.js'
 
 const STORAGE_KEY = 'mandal_admin_key'
 
@@ -74,7 +75,24 @@ function AdminDashboard({ adminKey, onLogout }) {
   const [images, setImages] = useState([])
   const [loading, setLoading] = useState(true)
   const [uploadStatus, setUploadStatus] = useState('idle')
+  const [editBookingId, setEditBookingId] = useState(null)
+  const [editForm, setEditForm] = useState({})
 
+  async function handleEditSave() {
+    try {
+      await api.updateBooking(adminKey, editBookingId, {
+        fullName: editForm['Full Name'],
+        size: editForm['T-Shirt Size'],
+        sleeveType: editForm['Sleeve Type'],
+        phoneNumber: editForm['Phone Number']
+      })
+      setEditBookingId(null)
+      setEditForm({})
+      refresh()
+    } catch (err) {
+      alert(err.message || 'अपडेट फेल झाले')
+    }
+  }
   async function refresh() {
     setLoading(true)
     const [bookingsRes, imagesRes] = await Promise.all([
@@ -163,18 +181,63 @@ function AdminDashboard({ adminKey, onLogout }) {
                 </tr>
               </thead>
               <tbody>
-                {bookings.map((b, i) => (
-                  <tr key={b.id || i}>
-                    {Object.entries(b).filter(([k]) => k !== 'id').map(([k, v], j) => <td key={j}>{v}</td>)}
-                    <td>
-                      <button onClick={async () => {
-                        if (!confirm('हे बुकिंग डिलीट करायचे?')) return;
-                        await api.deleteBooking(adminKey, b.id);
-                        refresh();
-                      }}>Delete</button>
-                    </td>
-                  </tr>
-                ))}
+                {bookings.map((b, i) => {
+                  const isEditing = editBookingId === b.id;
+                  return (
+                    <tr key={b.id || i}>
+                      {Object.entries(b).filter(([k]) => k !== 'id').map(([k, v], j) => {
+                        if (isEditing && ['Full Name', 'T-Shirt Size', 'Sleeve Type', 'Phone Number'].includes(k)) {
+                          if (k === 'T-Shirt Size') {
+                            return (
+                              <td key={j}>
+                                <select value={editForm[k]} onChange={(e) => setEditForm({...editForm, [k]: e.target.value})}>
+                                  <option value="">Select Size</option>
+                                  {SIZE_CHART.map((s) => <option key={s.size} value={s.size}>{s.size}</option>)}
+                                </select>
+                              </td>
+                            )
+                          }
+                          if (k === 'Sleeve Type') {
+                            return (
+                              <td key={j}>
+                                <select value={editForm[k]} onChange={(e) => setEditForm({...editForm, [k]: e.target.value})}>
+                                  <option value="Half Sleeve">Half Sleeve</option>
+                                  <option value="Full Sleeve">Full Sleeve</option>
+                                </select>
+                              </td>
+                            )
+                          }
+                          return (
+                            <td key={j}>
+                              <input type="text" value={editForm[k]} onChange={(e) => setEditForm({...editForm, [k]: e.target.value})} />
+                            </td>
+                          )
+                        }
+                        return <td key={j}>{v}</td>
+                      })}
+                      <td>
+                        {isEditing ? (
+                          <>
+                            <button onClick={handleEditSave} style={{marginRight: '5px'}}>Save</button>
+                            <button onClick={() => setEditBookingId(null)}>Cancel</button>
+                          </>
+                        ) : (
+                          <div style={{display: 'flex', gap: '5px'}}>
+                            <button onClick={() => {
+                              setEditBookingId(b.id)
+                              setEditForm({...b})
+                            }}>Edit</button>
+                            <button onClick={async () => {
+                              if (!confirm('हे बुकिंग डिलीट करायचे?')) return;
+                              await api.deleteBooking(adminKey, b.id);
+                              refresh();
+                            }}>Delete</button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
